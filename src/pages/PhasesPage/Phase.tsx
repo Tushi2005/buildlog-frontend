@@ -1,17 +1,21 @@
 import { useState } from "react"
+import type { Phase } from "../../models/phase";
 
-export default function PhaseElement({ phaseName, phaseType, time, desc }: { phaseName: string, phaseType: string, time:number, desc:string }) {
+export default function PhaseElement({phase}:{phase:Phase}) {
     const [isOpened, setOpen] = useState<boolean>(false);
 
     if (isOpened) {
         return <>
             <PhaseHeader></PhaseHeader>
             <article>
-                <p>Time: {time} hours</p>
+                <p>Time: {phase.time} hours</p>
                 <button>Pause Phase</button>
                 <button>Finish Phase</button>
                 <button>Add image</button>
-                <p>{desc}</p>
+                <p>{phase.description}</p>
+                <ul>
+                    {phase.materials.map((material,index) => material===""?  "":  <li key={index}> {material}</li> )}
+                </ul>
             </article>
         </>
     } else {
@@ -28,9 +32,10 @@ export default function PhaseElement({ phaseName, phaseType, time, desc }: { pha
         let state = isOpened ? "Close" : "Open";
 
         return <>
-            <h3>{phaseName}</h3>
-            <p>{phaseType}</p>
+            <h3>{phase.name}</h3>
+            <p>{phase.type}</p>
             <button onClick={handleOpening}>{state}</button>
         </>
     }
+
 }

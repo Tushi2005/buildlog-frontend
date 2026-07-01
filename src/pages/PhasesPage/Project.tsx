@@ -1,6 +1,6 @@
 import { useState } from "react"
 import PhaseElement from "./Phase";
-import type { Phase } from "../../models/phaseModel";
+import type { Phase } from "../../models/phase";
 
 
 export default function Project({ projectName, projectType }: { projectName: string, projectType: string }) {
@@ -8,13 +8,14 @@ export default function Project({ projectName, projectType }: { projectName: str
     const [isDialogOpened, setDialogOpen] = useState<boolean>(false);
     const [isProjectFinishing, setProjectFinished] = useState<boolean>(false);
     const [phases, setPhases] = useState<Phase[]>([]);
+    const [materialCount, setMaterialCount] = useState<number>(0);
 
 
     function handleOpening() {
         setOpen(!isOpened);
     }
     function openProject() {
-        return phases.map(phase => <PhaseElement key={phase.id} phaseName={phase.name} phaseType={phase.type} time={phase.time} desc={phase.description}></PhaseElement>)
+        return phases.map(phase => <PhaseElement key={phase.id} phase={phase}></PhaseElement>)
     }
 
     function handleAddPhase() {
@@ -34,15 +35,38 @@ export default function Project({ projectName, projectType }: { projectName: str
             type: formJson.phaseType as string,
             time: 5,
             description: formJson.description as string,
-            materials: []
+            materials: formData.getAll("materials") as string[]
         };
 
         setPhases([...phases, newPhase]);
+        setMaterialCount(0);
         handleAddPhase();
+    }
+
+    function materialSection() {
+        return Array.from({ length: materialCount }).map((_, index) =>
+            <li key={index}>
+                <label htmlFor="">Material Name
+                    <input type="text" name="materials" />
+                </label>
+                <button type="button">delete</button>
+            </li>
+        )
+    }
+
+    function typeSection() {
+        return <select name="phaseType">Type
+            <option value="type 1">Type 1</option>
+            <option value="type 2">Type 2</option>
+        </select>
     }
 
 
     function addPhase() {
+        function addMaterial() {
+            setMaterialCount(materialCount + 1);
+        }
+
         return <>
             <dialog open={isDialogOpened}>
                 <form action="" onSubmit={handleSubmit}>
@@ -51,10 +75,14 @@ export default function Project({ projectName, projectType }: { projectName: str
                         <input type="text" name="phaseName" id="phaseName" />
                     </div>
                     <div>
-                        <select name="phaseType">Type
-                            <option value="Material 1">Material 1</option>
-                            <option value="Material 2">material 2</option>
-                        </select>
+                        {typeSection()}
+                    </div>
+                    <div>
+                        <label htmlFor="">Add material</label>
+                        <button onClick={addMaterial} type="button">Add</button>
+                        <ul>
+                            {materialSection()}
+                        </ul>
                     </div>
 
                     <div>
