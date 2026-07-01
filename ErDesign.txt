@@ -1,0 +1,13 @@
+SoftDelete
+
+ER:
+Project: Name, ProjectType_id_Fk, UserId, state(active, stopped, finished, archived), IsDeleted,
+ProjectMaterial: MaterialId, ProjectId, UsedMaterial, PlannedMaterial, 
+Material: Name, UserId, Stored_Amount, MaterialType_id_Fk
+User: Name, Password, Email
+UserUser: A_User_Id, B_User_Id
+Phase:Project_Id, State(active, stopped, finished), IsDeleted
+TimeEvent: Phase_Id, Date_Start, Date_End
+Photo:Phase_Id, Date, IMG_URL
+MaterialType: Name, UserId
+ProjectType: Name, UserId
