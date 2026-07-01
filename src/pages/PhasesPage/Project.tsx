@@ -8,7 +8,8 @@ export default function Project({ projectName, projectType }: { projectName: str
     const [isDialogOpened, setDialogOpen] = useState<boolean>(false);
     const [isProjectFinishing, setProjectFinished] = useState<boolean>(false);
     const [phases, setPhases] = useState<Phase[]>([]);
-    const [materialCount, setMaterialCount] = useState<number>(0);
+    const [materialCount, setMaterialCount] = useState<number[]>([]);
+    const [deletedIndexes, setDeletedIndexes] = useState<number[]>([]);
 
 
     function handleOpening() {
@@ -39,19 +40,27 @@ export default function Project({ projectName, projectType }: { projectName: str
         };
 
         setPhases([...phases, newPhase]);
-        setMaterialCount(0);
+        setMaterialCount([]);
+        setDeletedIndexes([]);
         handleAddPhase();
     }
 
-    function materialSection() {
-        return Array.from({ length: materialCount }).map((_, index) =>
-            <li key={index}>
-                <label htmlFor="">Material Name
-                    <input type="text" name="materials" />
-                </label>
-                <button type="button">delete</button>
-            </li>
-        )
+    function handleMaterialDelete(index: number) {
+        setDeletedIndexes([...deletedIndexes, index]);
+    }
+
+    function materialDisplay(length: number) {
+        return Array.from({ length })
+            .map((_, index) => index)
+            .filter((index) => !deletedIndexes.includes(index))
+            .map((index) => (
+                <li key={index}>
+                    <label htmlFor="">Material Name
+                        <input type="text" name="materials" />
+                    </label>
+                    <button type="button" onClick={() => handleMaterialDelete(index)}>delete</button>
+                </li>
+            ));
     }
 
     function typeSection() {
@@ -64,7 +73,7 @@ export default function Project({ projectName, projectType }: { projectName: str
 
     function addPhase() {
         function addMaterial() {
-            setMaterialCount(materialCount + 1);
+            setMaterialCount([...materialCount, materialCount[materialCount.length - 1] + 1]);
         }
 
         return <>
@@ -81,7 +90,7 @@ export default function Project({ projectName, projectType }: { projectName: str
                         <label htmlFor="">Add material</label>
                         <button onClick={addMaterial} type="button">Add</button>
                         <ul>
-                            {materialSection()}
+                            {materialDisplay(materialCount.length)}
                         </ul>
                     </div>
 
