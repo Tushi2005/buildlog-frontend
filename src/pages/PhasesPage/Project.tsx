@@ -63,11 +63,13 @@ export default function Project({ projectName, projectType }: { projectName: str
             ));
     }
 
-    function typeSection() {
-        return <select name="phaseType">Type
-            <option value="type 1">Type 1</option>
-            <option value="type 2">Type 2</option>
-        </select>
+   function typeSection() {
+        return <label htmlFor="phaseType">Type
+            <select name="phaseType" id="phaseType">
+                <option value="type 1">Type 1</option>
+                <option value="type 2">Type 2</option>
+            </select>
+        </label>
     }
 
 
@@ -136,7 +138,7 @@ export default function Project({ projectName, projectType }: { projectName: str
 
 
     return <>
-        <ProjectHeader></ProjectHeader>
+        {ProjectHeader()}
         {isOpened && openProject()}
         {isDialogOpened && addPhase()}
         {isProjectFinishing && finishingProject()}
