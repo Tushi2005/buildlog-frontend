@@ -34,6 +34,7 @@ export default function PhaseElement({ phase }: { phase: Phase }) {
             <h3>{phase.name}</h3>
             <p>{phase.type}</p>
             <button onClick={handleOpening}>{state}</button>
+            <br />
         </>
     }
 

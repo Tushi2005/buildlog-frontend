@@ -1,9 +1,15 @@
 import NavBar from "../../components/NavBar"
-import Project from "./Project"
+import type { Project } from "../../models/project";
+import ProjectElement from "./Project";
 
-export default function(){
-    return<>
-    <Project projectName="Project 1" projectType="projectType 1"></Project>
-    <NavBar></NavBar>
+export default function ({projects,onAddProject}:{projects:Project[],onAddProject:(project:Project) => void}) {
+    return <>
+        {displayProjects()}
+        <NavBar onAddProject={onAddProject}></NavBar>
     </>
+
+    function displayProjects() {
+        return projects.map((project,index )=> <ProjectElement project={project} key={index}></ProjectElement>)
+    }
 }
+

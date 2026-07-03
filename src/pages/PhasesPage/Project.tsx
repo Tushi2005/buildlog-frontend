@@ -1,9 +1,10 @@
 import { useState } from "react"
 import PhaseElement from "./Phase";
 import type { Phase } from "../../models/phase";
+import type { Project } from "../../models/project";
 
 
-export default function Project({ projectName, projectType }: { projectName: string, projectType: string }) {
+export default function ProjectElement({ project }: { project:Project }) {
     const [isOpened, setOpen] = useState<boolean>(false);
     const [isDialogOpened, setDialogOpen] = useState<boolean>(false);
     const [isProjectFinishing, setProjectFinished] = useState<boolean>(false);
@@ -128,8 +129,8 @@ export default function Project({ projectName, projectType }: { projectName: str
     function ProjectHeader() {
         let status = isOpened ? "Close" : "Open";
         return <>
-            <label htmlFor="">{projectName}</label>
-            <p>{projectType}</p>
+            <h1>{project.name}</h1>
+            <p>{project.type}</p>
             <button onClick={handleAddPhase}>Add phase</button>
             <button onClick={handleFinishingProject}>Finishing Project</button>
             <button onClick={handleOpening}>{status}</button>
