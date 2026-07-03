@@ -40,9 +40,9 @@ export default function Timer() {
 
     function timerDisplay() {
         return <span>
-            {timer.hour > 10 ? timer.hour : "0" + timer.hour}:
-            {timer.min > 10 ? timer.min : "0" + timer.min}:
-            {timer.sec > 10 ? timer.sec : "0" + timer.sec}
+            {timer.hour >= 10 ? timer.hour : "0" + timer.hour}:
+            {timer.min >= 10 ? timer.min : "0" + timer.min}:
+            {timer.sec >= 10 ? timer.sec : "0" + timer.sec}
         </span>
     }
 }
