@@ -4,6 +4,7 @@ import ProjectElement from "./Project";
 
 export default function ({projects,onAddProject}:{projects:Project[],onAddProject:(project:Project) => void}) {
     return <>
+        <h1>Phases</h1>
         {displayProjects()}
         <NavBar onAddProject={onAddProject}></NavBar>
     </>

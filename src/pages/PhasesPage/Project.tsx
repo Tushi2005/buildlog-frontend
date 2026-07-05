@@ -129,7 +129,7 @@ export default function ProjectElement({ project }: { project:Project }) {
     function ProjectHeader() {
         let status = isOpened ? "Close" : "Open";
         return <>
-            <h1>{project.name}</h1>
+            <h2>{project.name}</h2>
             <p>{project.type}</p>
             <button onClick={handleAddPhase}>Add phase</button>
             <button onClick={handleFinishingProject}>Finishing Project</button>

@@ -1,13 +1,13 @@
 import { useState } from "react";
 import type { MaterialType } from "../../models/materialType";
 import type { Material } from "../../models/material";
+import { useCrudList } from "../../hooks/useCrudList";
 
 export default function Store({ materialType }: { materialType: MaterialType }) {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [isAddingMaterial, setIsAddingMaterial] = useState<boolean>(false);
-    const [materials, setMaterials] = useState<Material[]>([]);
-    const [id, setId] = useState<number>(0);
     const [editingMaterial, setEditingMaterial] = useState<null | Material>(null);
+    const { items: materials, add: addMaterial, remove: removeMaterial, update: updateMaterial } = useCrudList<Material>();
 
     return <>
         {materialTypeHeader(materialType)}
@@ -74,58 +74,34 @@ export default function Store({ materialType }: { materialType: MaterialType }) 
     }
 
     function handleSubmit(e: any) {
-
         e.preventDefault();
-
-        const form = e.target;
-        const formData = new FormData(form);
-
+        const formData = new FormData(e.target);
         const formJson = Object.fromEntries(formData.entries());
 
         if (editingMaterial) {
-            const updatedMaterial: Material = {
+            updateMaterial({
                 ...editingMaterial,
                 amount: Number(formData.get("materialAmount")),
                 name: formJson.materialName as string,
                 unit: formJson.unit as string,
-            };
-            handleEditingMaterial(updatedMaterial);
+            });
             setEditingMaterial(null);
         } else {
-
-
-            const newMaterial: Material = {
-                id: id,
+            addMaterial({
                 name: formJson.materialName as string,
                 unit: formJson.unit as string,
                 amount: Number(formData.get("materialAmount")),
-            };
-            setId(id + 1);
-            setMaterials([...materials, newMaterial]);
+            });
         }
-
         handleIsAddingMaterial();
-
     }
 
     function handleDelete(materialId: number) {
-        setMaterials(materials.filter(material => material.id !== materialId))
+        removeMaterial(materialId);
     }
 
     function handleEditClick(material: Material) {
         setEditingMaterial(material);
         setIsAddingMaterial(true);
     }
-
-    function handleEditingMaterial(material: Material) {
-        setMaterials(
-            materials.map(t => {
-                if (t.id === material.id)
-                    return material;
-                else
-                    return t;
-            })
-        )
-    }
-
 }
