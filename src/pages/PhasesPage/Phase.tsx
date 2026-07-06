@@ -2,15 +2,19 @@ import { useState } from "react"
 import type { Phase } from "../../models/phase";
 import Timer from "../../components/Timer";
 
-export default function PhaseElement({ phase }: { phase: Phase }) {
+export default function PhaseElement({ phase, readOnly = false }: { phase: Phase, readOnly: boolean }) {
     const [isOpened, setOpen] = useState<boolean>(false);
 
     if (isOpened) {
         return <>
             <PhaseHeader></PhaseHeader>
             <article>
-                <Timer></Timer>
-                <button>Add image</button>
+                {readOnly ? (
+                    <p>Duration: {phase.time} hours</p>
+                ) : (
+                    <Timer></Timer>
+                )}
+                {!readOnly && <button>Add image</button>}
                 <p>{phase.description}</p>
                 <ul>
                     {phase.materials.map((material, index) => material === "" ? "" : <li key={index}> {material}</li>)}

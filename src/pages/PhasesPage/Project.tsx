@@ -5,14 +5,14 @@ import type { Project } from "../../models/project";
 import { useCrudList } from "../../hooks/useCrudList";
 
 
-export default function ProjectElement({ project }: { project: Project }) {
+export default function ProjectElement({ project, readOnly = false, initialPhases }: { project: Project, readOnly?: boolean, initialPhases: Phase[] }) {
     const [isProjectOpened, setIsProjectOpened] = useState<boolean>(false);
     const [isAddingPhaseOpened, setIsAddingPhaseOpened] = useState<boolean>(false);
     const [isProjectFinishing, setProjectFinished] = useState<boolean>(false);
     const [materialCount, setMaterialCount] = useState<number[]>([]);
     const [deletedIndexes, setDeletedIndexes] = useState<number[]>([]);
     const [editPhase, setEditPhase] = useState<null | Phase>(null);
-    const { items: phases, add: addPhase, remove: removePhase, update: updatePhase } = useCrudList<Phase>();
+    const { items: phases, add: addPhase, remove: removePhase, update: updatePhase } = useCrudList<Phase>(initialPhases);
 
 
     return <>
@@ -29,12 +29,12 @@ export default function ProjectElement({ project }: { project: Project }) {
     function openProject() {
         return phases.map((phase, index) => {
             return <div key={index}>
-                <PhaseElement phase={phase}></PhaseElement>
-                <button onClick={() => removePhase(phase.id)}>Remove</button>
-                <button onClick={() => {
+                <PhaseElement phase={phase} readOnly={readOnly}></PhaseElement>
+                {!readOnly && <button onClick={() => removePhase(phase.id)}>Remove</button>}
+                {!readOnly && <button onClick={() => {
                     setEditPhase(phase)
                     setIsAddingPhaseOpened(true);
-                }}>Edit</button>
+                }}>Edit</button>}
             </div>
         }
         )
@@ -85,7 +85,7 @@ export default function ProjectElement({ project }: { project: Project }) {
             .map((index) => (
                 <li key={index}>
                     <label htmlFor="">Material Name
-                        <input type="text" name="materials"/>
+                        <input type="text" name="materials" />
                     </label>
                     <button type="button" onClick={() => handleMaterialDelete(index)}>delete</button>
                 </li>
@@ -112,7 +112,7 @@ export default function ProjectElement({ project }: { project: Project }) {
                 <form action="" onSubmit={handleSubmit}>
                     <div>
                         <label htmlFor="phaseName">Name</label>
-                        <input type="text" name="phaseName" id="phaseName" defaultValue={editPhase?.name}/>
+                        <input type="text" name="phaseName" id="phaseName" defaultValue={editPhase?.name} />
                     </div>
                     <div>
                         {typeSection()}
@@ -159,8 +159,8 @@ export default function ProjectElement({ project }: { project: Project }) {
         return <>
             <h2>{project.name}</h2>
             <p>{project.type}</p>
-            <button onClick={handleAddPhase}>Add phase</button>
-            <button onClick={handleFinishingProject}>Finishing Project</button>
+            {!readOnly && <button onClick={handleAddPhase}>Add phase</button>}
+            {!readOnly && <button onClick={handleFinishingProject}>Finishing Project</button>}
             <button onClick={handleOpening}>{status}</button>
         </>
     }

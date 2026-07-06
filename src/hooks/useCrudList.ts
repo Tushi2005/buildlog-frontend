@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-export function useCrudList<T extends { id: number }>() {
-    const [items, setItems] = useState<T[]>([]);
+export function useCrudList<T extends { id: number }>(initial: T[] = []) {
+    const [items, setItems] = useState<T[]>(initial);
     const [nextId, setNextId] = useState<number>(0);
 
     function add(itemWithoutId: Omit<T, "id">) {

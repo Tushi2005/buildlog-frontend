@@ -25,7 +25,7 @@ export default function PhasesPage() {
                     setIsAddingOpen(true);
                 }
                 }>Edit</button>
-                <ProjectElement project={project} key={index}></ProjectElement>
+                <ProjectElement project={project} key={index} initialPhases={[]}></ProjectElement>
             </div>
         })
     }
