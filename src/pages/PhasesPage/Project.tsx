@@ -2,26 +2,46 @@ import { useState } from "react"
 import PhaseElement from "./Phase";
 import type { Phase } from "../../models/phase";
 import type { Project } from "../../models/project";
+import { useCrudList } from "../../hooks/useCrudList";
 
 
-export default function ProjectElement({ project }: { project:Project }) {
-    const [isOpened, setOpen] = useState<boolean>(false);
-    const [isDialogOpened, setDialogOpen] = useState<boolean>(false);
+export default function ProjectElement({ project }: { project: Project }) {
+    const [isProjectOpened, setIsProjectOpened] = useState<boolean>(false);
+    const [isAddingPhaseOpened, setIsAddingPhaseOpened] = useState<boolean>(false);
     const [isProjectFinishing, setProjectFinished] = useState<boolean>(false);
-    const [phases, setPhases] = useState<Phase[]>([]);
     const [materialCount, setMaterialCount] = useState<number[]>([]);
     const [deletedIndexes, setDeletedIndexes] = useState<number[]>([]);
+    const [editPhase, setEditPhase] = useState<null | Phase>(null);
+    const { items: phases, add: addPhase, remove: removePhase, update: updatePhase } = useCrudList<Phase>();
 
+
+    return <>
+        {ProjectHeader()}
+        {isProjectOpened && openProject()}
+        {isAddingPhaseOpened && onAddPhase()}
+        {isProjectFinishing && finishingProject()}
+    </>
 
     function handleOpening() {
-        setOpen(!isOpened);
+        setIsProjectOpened(!isProjectOpened);
     }
+
     function openProject() {
-        return phases.map(phase => <PhaseElement key={phase.id} phase={phase}></PhaseElement>)
+        return phases.map((phase, index) => {
+            return <div key={index}>
+                <PhaseElement phase={phase}></PhaseElement>
+                <button onClick={() => removePhase(phase.id)}>Remove</button>
+                <button onClick={() => {
+                    setEditPhase(phase)
+                    setIsAddingPhaseOpened(true);
+                }}>Edit</button>
+            </div>
+        }
+        )
     }
 
     function handleAddPhase() {
-        setDialogOpen(!isDialogOpened);
+        setIsAddingPhaseOpened(!isAddingPhaseOpened);
     }
 
     function handleSubmit(e: any) {
@@ -31,18 +51,26 @@ export default function ProjectElement({ project }: { project:Project }) {
         const formData = new FormData(form);
 
         const formJson = Object.fromEntries(formData.entries());
-        const newPhase: Phase = {
-            id: phases.length,
-            name: formJson.phaseName as string,
-            type: formJson.phaseType as string,
-            time: 5,
-            description: formJson.description as string,
-            materials: formData.getAll("materials") as string[]
-        };
 
-        setPhases([...phases, newPhase]);
-        setMaterialCount([]);
-        setDeletedIndexes([]);
+        if (editPhase) {
+            updatePhase({
+                ...editPhase,
+                name: formJson.phaseName as string,
+                type: formJson.phaseType as string,
+                time: 5,
+                description: formJson.description as string,
+                materials: formData.getAll("materials") as string[]
+            })
+            setEditPhase(null)
+        } else {
+            addPhase({
+                name: formJson.phaseName as string,
+                type: formJson.phaseType as string,
+                time: 5,
+                description: formJson.description as string,
+                materials: formData.getAll("materials") as string[]
+            });
+        }
         handleAddPhase();
     }
 
@@ -57,16 +85,16 @@ export default function ProjectElement({ project }: { project:Project }) {
             .map((index) => (
                 <li key={index}>
                     <label htmlFor="">Material Name
-                        <input type="text" name="materials" />
+                        <input type="text" name="materials"/>
                     </label>
                     <button type="button" onClick={() => handleMaterialDelete(index)}>delete</button>
                 </li>
             ));
     }
 
-   function typeSection() {
+    function typeSection() {
         return <label htmlFor="phaseType">Type
-            <select name="phaseType" id="phaseType">
+            <select name="phaseType" id="phaseType" defaultValue={editPhase?.type}>
                 <option value="type 1">Type 1</option>
                 <option value="type 2">Type 2</option>
             </select>
@@ -74,17 +102,17 @@ export default function ProjectElement({ project }: { project:Project }) {
     }
 
 
-    function addPhase() {
+    function onAddPhase() {
         function addMaterial() {
             setMaterialCount([...materialCount, materialCount[materialCount.length - 1] + 1]);
         }
 
         return <>
-            <dialog open={isDialogOpened}>
+            <dialog open={isAddingPhaseOpened}>
                 <form action="" onSubmit={handleSubmit}>
                     <div>
                         <label htmlFor="phaseName">Name</label>
-                        <input type="text" name="phaseName" id="phaseName" />
+                        <input type="text" name="phaseName" id="phaseName" defaultValue={editPhase?.name}/>
                     </div>
                     <div>
                         {typeSection()}
@@ -99,7 +127,7 @@ export default function ProjectElement({ project }: { project:Project }) {
 
                     <div>
                         <label htmlFor="">Description</label>
-                        <textarea name="description"></textarea>
+                        <textarea name="description" defaultValue={editPhase?.description}></textarea>
                     </div>
                     <div>
                         <button type="submit">Ok</button>
@@ -127,7 +155,7 @@ export default function ProjectElement({ project }: { project:Project }) {
     }
 
     function ProjectHeader() {
-        let status = isOpened ? "Close" : "Open";
+        let status = isProjectOpened ? "Close" : "Open";
         return <>
             <h2>{project.name}</h2>
             <p>{project.type}</p>
@@ -137,12 +165,5 @@ export default function ProjectElement({ project }: { project:Project }) {
         </>
     }
 
-
-    return <>
-        {ProjectHeader()}
-        {isOpened && openProject()}
-        {isDialogOpened && addPhase()}
-        {isProjectFinishing && finishingProject()}
-    </>
 }
 
